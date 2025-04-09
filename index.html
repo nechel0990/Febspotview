@@ -3,49 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Febspot Multi Video Player</title>
+  <title>Febspot Video Popups</title>
   <style>
     body {
       font-family: sans-serif;
-      background: #f9f9f9;
-      margin: 0;
-      padding: 20px;
-      transition: background 0.3s;
-    }
-    .dark-mode {
-      background: #121212;
-      color: white;
-    }
-    .container {
-      max-width: 1200px;
-      margin: auto;
       text-align: center;
+      padding: 30px;
+      background: #f0f0f0;
     }
-    input, button, select {
-      padding: 8px;
-      margin: 5px;
-      font-size: 14px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-    #videoContainer {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 10px;
-      margin-top: 20px;
-    }
-    iframe {
-      width: 100%;
-      aspect-ratio: 16/9;
-      border: none;
-      border-radius: 10px;
+    input, button {
+      padding: 10px;
+      margin: 10px;
+      font-size: 16px;
     }
     #repeatCounter {
-      margin-top: 10px;
       font-weight: bold;
       background: #000;
       color: #fff;
-      padding: 5px 15px;
+      padding: 8px 15px;
       border-radius: 5px;
       display: inline-block;
     }
@@ -53,64 +28,49 @@
 </head>
 <body>
 
-  <div class="container">
-    <h1>Febspot Multi Video Player</h1>
+  <h1>Febspot Multi Popup Player</h1>
 
-    <input type="text" id="febspotUrl" placeholder="Paste Febspot video link" style="width: 300px;">
-    <input type="number" id="count" min="1" max="200" value="10">
-    <button onclick="generateVideos()">Play Videos</button>
+  <input type="text" id="febspotUrl" placeholder="Paste Febspot link (e.g. https://www.febspot.com/video/2720286)" size="50">
+  <input type="number" id="count" min="1" max="100" value="5">
+  <button onclick="openPopups()">Open Videos</button>
 
-    <div>
-      <button onclick="toggleDark()">Toggle Dark Mode</button>
-    </div>
-
-    <div id="repeatCounter">Repeats: 0</div>
-
-    <div id="videoContainer"></div>
-  </div>
+  <div id="repeatCounter">Repeats: 0</div>
 
   <script>
     let repeatCount = 0;
-    let interval;
-    let isDark = false;
+    let repeatTimer;
 
     function extractVideoId(link) {
       const match = link.match(/febspot\.com\/video\/(\d+)/);
       return match ? match[1] : null;
     }
 
-    function generateVideos() {
-      clearInterval(interval);
-      repeatCount = 0;
-      document.getElementById("repeatCounter").innerText = "Repeats: 0";
-
+    function openPopups() {
       const link = document.getElementById("febspotUrl").value;
       const count = parseInt(document.getElementById("count").value);
       const videoId = extractVideoId(link);
-      const container = document.getElementById("videoContainer");
-      container.innerHTML = "";
 
       if (!videoId) {
         alert("Invalid Febspot link");
         return;
       }
 
+      const videoUrl = `https://www.febspot.com/video/${videoId}`;
+
       for (let i = 0; i < count; i++) {
-        const iframe = document.createElement("iframe");
-        iframe.src = `https://www.febspot.com/embed/${videoId}?autoplay=1&loop=1`;
-        container.appendChild(iframe);
+        window.open(videoUrl, `_blank`);
       }
 
-      interval = setInterval(() => {
+      // Start fake repeat counter (based on time)
+      clearInterval(repeatTimer);
+      repeatCount = 0;
+      document.getElementById("repeatCounter").innerText = "Repeats: 0";
+      repeatTimer = setInterval(() => {
         repeatCount++;
         document.getElementById("repeatCounter").innerText = `Repeats: ${repeatCount}`;
-      }, 10000);
-    }
-
-    function toggleDark() {
-      isDark = !isDark;
-      document.body.classList.toggle("dark-mode", isDark);
+      }, 10000); // updates every 10 seconds
     }
   </script>
+
 </body>
 </html>
